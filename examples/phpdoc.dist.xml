@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+    configVersion="3"
+    xmlns="http://phpdoc.org/xsl/config"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://phpdoc.org/xsl/config https://schema.phpdoc.org/config.xsd"
+>
+    <title>AI-TLP Demo Project</title>
+    <paths>
+        <output>build/docs</output>
+        <cache>build/cache</cache>
+    </paths>
+    <version number="1.0.0">
+        <api format="php">
+            <source dsn=".">
+                <path>src</path>
+            </source>
+        </api>
+    </version>
+    <extensions>
+        <extension class="\LeibnizPsychology\PhpDocAiTlp\Extension" />
+    </extensions>
+</phpdocumentor>
