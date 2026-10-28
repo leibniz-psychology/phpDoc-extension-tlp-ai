@@ -108,7 +108,7 @@ A robust testing suite is essential to ensure compatibility with various phpDocu
 - PHP 8.1+
 - phpDocumentor 3.3+
 - Composer for dependency management
-- **Note**: This extension uses a Composer alias for `league/flysystem` (`^3.0 as 1.1.10`) to satisfy phpDocumentor's legacy dependencies with a modern, secure version of the library. This avoids known security advisories (`PKSA-w9tt-7782-78jx`, `PKSA-pwh8-d4fr-nywn`) without compromising the documentation generation process.
+- **Note**: This extension uses a Composer alias for `league/flysystem` (`3.36.0 as 1.1.10`) to satisfy phpDocumentor's legacy dependencies with a modern, secure version of the library. This avoids known security advisories (`PKSA-w9tt-7782-78jx`, `PKSA-pwh8-d4fr-nywn`) without compromising the documentation generation process.
 
 ## 9. Integration and Installation
 The extension is designed to be integrated into PHP projects via **Composer**.
