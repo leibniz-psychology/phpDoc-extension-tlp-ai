@@ -27,18 +27,26 @@ class Extension
         $this->tagFactory->registerTagHandler('ai-tlp', AiTlpFactory::class);
 
         // 2. Register an assembler to convert the Reflection Tag into a Descriptor
-        // This puts it into the AST that Twig can access.
-        $this->builder->addAssembler(
-            fn($tag) => $tag instanceof AiTlpFactory,
-            new class extends AssemblerAbstract {
-                public function create(object $data): AiTlpTag
-                {
-                    /** @var AiTlpFactory $data */
-                    $tag = new AiTlpTag($data->getName(), $data->getLevel());
-                    $tag->setDescription(new DescriptionDescriptor($data->getDescription(), []));
-                    return $tag;
+        // In recent versions of phpDocumentor 3.x, addAssembler() was removed and
+        // the assembler factory became protected. We use reflection to access it.
+        $reflection = new \ReflectionClass($this->builder);
+        if ($reflection->hasProperty('assemblerFactory')) {
+            $property = $reflection->getProperty('assemblerFactory');
+            $property->setAccessible(true);
+            $assemblerFactory = $property->getValue($this->builder);
+
+            $assemblerFactory->register(
+                fn($tag) => $tag instanceof AiTlpFactory,
+                new class extends AssemblerAbstract {
+                    public function create(object $data): AiTlpTag
+                    {
+                        /** @var AiTlpFactory $data */
+                        $tag = new AiTlpTag($data->getName(), $data->getLevel());
+                        $tag->setDescription(new DescriptionDescriptor($data->getDescription(), []));
+                        return $tag;
+                    }
                 }
-            }
-        );
+            );
+        }
     }
 }
