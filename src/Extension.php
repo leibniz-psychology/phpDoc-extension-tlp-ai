@@ -6,7 +6,7 @@ namespace LeibnizPsychology\PhpDocAiTlp;
 
 use LeibnizPsychology\PhpDocAiTlp\Tag\AiTlpFactory;
 use LeibnizPsychology\PhpDocAiTlp\Tag\AiTlpTag;
-use phpDocumentor\Descriptor\Builder\Reflector\Tags\TagAssembler;
+use phpDocumentor\Descriptor\Builder\Reflector\AssemblerAbstract;
 use phpDocumentor\Descriptor\DocBlock\DescriptionDescriptor;
 use phpDocumentor\Descriptor\ProjectDescriptorBuilder;
 use phpDocumentor\Reflection\DocBlock\Tag as ReflectionTag;
@@ -28,10 +28,10 @@ class Extension
 
         // 2. Register an assembler to convert the Reflection Tag into a Descriptor
         // This puts it into the AST that Twig can access.
-        $this->builder->getAssemblerFactory()->register(
+        $this->builder->addAssembler(
             fn($tag) => $tag instanceof AiTlpFactory,
-            new class extends TagAssembler {
-                public function create(ReflectionTag $data): AiTlpTag
+            new class extends AssemblerAbstract {
+                public function create(object $data): AiTlpTag
                 {
                     /** @var AiTlpFactory $data */
                     $tag = new AiTlpTag($data->getName(), $data->getLevel());
