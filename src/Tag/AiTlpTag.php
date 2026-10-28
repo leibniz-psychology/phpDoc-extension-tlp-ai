@@ -11,13 +11,10 @@ class AiTlpTag extends TagDescriptor
 {
     private string $level;
 
-    public function __construct(string $name, string $level, ?string $description = null)
+    public function __construct(string $name, string $level)
     {
         parent::__construct($name);
         $this->level = AiTlpValidator::validate($level);
-        if ($description !== null) {
-            $this->setDescription($description);
-        }
     }
 
     public function getLevel(): string
