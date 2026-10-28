@@ -102,11 +102,11 @@ A robust testing suite is essential to ensure compatibility with various phpDocu
 ### E. Continuous Integration (CI)
 - **GitHub Actions**: A workflow will be implemented to automatically run the entire test suite on every push and pull request.
 - **Static Analysis**: Integration of PHPStan and PHP_CodeSniffer into the CI pipeline to maintain high code quality and PSR-12 compliance.
-- **Automated Matrix**: The CI will test across a matrix of PHP versions (8.1, 8.2, 8.3) to guarantee broad compatibility.
+- **Automated Matrix**: The CI will test across a matrix of PHP versions (8.1, 8.2, 8.3, 8.4) to guarantee broad compatibility.
 
 ## 8. Technical Requirements
 - PHP 8.1+
-- phpDocumentor 3.x
+- phpDocumentor 3.3+
 - Composer for dependency management
 
 ## 9. Integration and Installation
