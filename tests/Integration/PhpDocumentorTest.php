@@ -18,6 +18,8 @@ final class PhpDocumentorTest extends TestCase
         }
 
         self::assertFileExists($phar);
+        $phar = realpath($phar);
+        self::assertIsString($phar);
         $root = dirname(__DIR__, 2);
         $directory = sys_get_temp_dir() . '/ai-tlp-' . bin2hex(random_bytes(8));
         $filesystem = new Filesystem();
