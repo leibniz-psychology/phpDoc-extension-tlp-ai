@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phar xmlns="https://phar.io/xml/manifest/1.0">
+    <contains name="leibniz-psychology/phpdoc-extension-tlp-ai" version="1.0.0" type="extension">
+        <extension for="phpdocumentor/phpdocumentor" compatible="^3.10"/>
+    </contains>
+    <copyright>
+        <author name="Leibniz Psychology"/>
+        <license type="MIT" url="https://opensource.org/licenses/MIT"/>
+    </copyright>
+    <requires>
+        <php version="^8.1"/>
+    </requires>
+    <bundles>
+        <component name="LeibnizPsychology\PhpDocAiTlp\Extension" version="1.0.0"/>
+    </bundles>
+</phar>

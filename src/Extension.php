@@ -4,49 +4,24 @@ declare(strict_types=1);
 
 namespace LeibnizPsychology\PhpDocAiTlp;
 
-use LeibnizPsychology\PhpDocAiTlp\Tag\AiTlpFactory;
-use LeibnizPsychology\PhpDocAiTlp\Tag\AiTlpTag;
-use phpDocumentor\Descriptor\Builder\Reflector\AssemblerAbstract;
-use phpDocumentor\Descriptor\DocBlock\DescriptionDescriptor;
-use phpDocumentor\Descriptor\ProjectDescriptorBuilder;
-use phpDocumentor\Reflection\DocBlock\Tag as ReflectionTag;
-use phpDocumentor\Reflection\DocBlock\TagFactory;
+use phpDocumentor\Descriptor\Builder\AssemblerFactory;
+use phpDocumentor\Extension\Extension as BaseExtension;
+use phpDocumentor\Reflection\DocBlockFactoryInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
-class Extension
+final class Extension extends BaseExtension
 {
-    public function __construct(
-        private ProjectDescriptorBuilder $builder,
-        private TagFactory $tagFactory
-    ) {
-    }
-
-    public function load(): void
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        // 1. Register the custom tag with the DocBlock Reflection library
-        // This allows phpDocumentor to recognize @ai-tlp during the reflection phase
-        $this->tagFactory->registerTagHandler('ai-tlp', AiTlpFactory::class);
+        $container->register('ai_tlp.docblock_factory', DocBlockFactoryInterface::class)
+            ->setDecoratedService(DocBlockFactoryInterface::class)
+            ->setFactory([Registration::class, 'docBlockFactory'])
+            ->setArguments([new Reference('ai_tlp.docblock_factory.inner')]);
 
-        // 2. Register an assembler to convert the Reflection Tag into a Descriptor
-        // In recent versions of phpDocumentor 3.x, addAssembler() was removed and
-        // the assembler factory became protected. We use reflection to access it.
-        $reflection = new \ReflectionClass($this->builder);
-        if ($reflection->hasProperty('assemblerFactory')) {
-            $property = $reflection->getProperty('assemblerFactory');
-            $property->setAccessible(true);
-            $assemblerFactory = $property->getValue($this->builder);
-
-            $assemblerFactory->register(
-                fn($tag) => $tag instanceof AiTlpFactory,
-                new class extends AssemblerAbstract {
-                    public function create(object $data): AiTlpTag
-                    {
-                        /** @var AiTlpFactory $data */
-                        $tag = new AiTlpTag($data->getName(), $data->getLevel());
-                        $tag->setDescription(new DescriptionDescriptor($data->getDescription(), []));
-                        return $tag;
-                    }
-                }
-            );
-        }
+        $container->register('ai_tlp.assembler_factory', AssemblerFactory::class)
+            ->setDecoratedService(AssemblerFactory::class)
+            ->setFactory([Registration::class, 'assemblerFactory'])
+            ->setArguments([new Reference('ai_tlp.assembler_factory.inner')]);
     }
 }
