@@ -57,28 +57,30 @@ public function handle(Request $request): Response
 }
 ```
 
-## 5. Proposed Project Structure
+## 5. Project Structure
 ```text
 .
 ├── composer.json           # Extension metadata and dependencies
 ├── SPECIFICATION.md        # This document
 ├── src/
 │   ├── Extension.php       # Main extension entry point
+│   ├── Registration.php    # phpDocumentor factory registration
+│   ├── manifest.xml        # phpDocumentor extension manifest
 │   ├── Tag/
+│   │   ├── AiTlpAssembler.php # Reflection-to-descriptor conversion
 │   │   ├── AiTlpTag.php    # Custom Tag Descriptor
 │   │   └── AiTlpFactory.php # Factory to create the Tag from PHPDoc
 │   └── Validator/
 │       └── AiTlpValidator.php # Validates TLP levels
 ├── templates/
-│   └── base/               # Twig overrides for AI-TLP display
-│       └── ai-tlp.html.twig
+│   └── overrides/components/tags.html.twig # Default template override
 └── tests/                  # Unit and integration tests
 ```
 
 ## 6. Implementation Roadmap
-1. **Phase 1: Basic Tag Support.** Define the tag and allow it to be parsed into the phpDocumentor AST.
-2. **Phase 2: Template Integration.** Modify or extend the default template to display the AI-TLP status.
-3. **Phase 3: Configuration.** Allow projects to define "Minimum allowed TLP" and trigger warnings during documentation generation if violated.
+1. **Basic Tag Support:** Implemented for phpDocumentor 3.10.
+2. **Template Integration:** A copyable override for the default HTML template is provided.
+3. **Policy Configuration:** Project-wide minimum levels remain a proposal.
 
 ## 7. Testing Strategy
 A robust testing suite is essential to ensure compatibility with various phpDocumentor versions and accurate parsing of the custom tag.
@@ -89,15 +91,17 @@ A robust testing suite is essential to ensure compatibility with various phpDocu
 - **Case Sensitivity**: Confirm that levels are correctly parsed regardless of casing (e.g., `AMBER` vs `amber`).
 
 ### B. Integration Tests
-- **AST Generation**: Verify that the tag is correctly stored within the phpDocumentor Abstract Syntax Tree (AST) after parsing a sample PHP file.
-- **Template Rendering**: Mock the Twig environment to ensure the AI-TLP data is correctly passed to the templates and rendered as expected.
+- **End-to-end**: Install the package in a temporary Composer project and run the
+  phpDocumentor 3.10 PHAR to check discovery, parsing, rendering, error reports,
+  and cached builds. Set `PHPDOC_PHAR` to the PHAR path to run this test locally.
 
 ### C. Compatibility Tests
 - **PHP Versions**: Run the test suite against supported PHP versions (8.1, 8.2, 8.3).
-- **phpDocumentor Versions**: Ensure compatibility with major versions of phpDocumentor 3.x.
+- **phpDocumentor Versions**: The integration test currently targets 3.10.0.
 
 ### D. Manual Verification
-- A sample "Demo Project" will be provided in the `examples/` directory to visually verify the generated documentation and the appearance of the traffic light badges.
+- The `examples/` directory contains sample configuration and source files.
+  Follow the README to install the extension and template override in a project.
 
 ### E. Continuous Integration (CI)
 - **GitHub Actions**: A workflow will be implemented to automatically run the entire test suite on every push and pull request.
@@ -106,46 +110,12 @@ A robust testing suite is essential to ensure compatibility with various phpDocu
 
 ## 8. Technical Requirements
 - PHP 8.1+
-- phpDocumentor 3.3+
+- phpDocumentor 3.10 (3.10.0 PHAR tested)
 - Composer for dependency management
-- **Note**: This extension uses a Composer alias for `league/flysystem` (`3.36.0 as 1.1.10`) to satisfy phpDocumentor's legacy dependencies with a modern, secure version of the library. This avoids known security advisories (`PKSA-w9tt-7782-78jx`, `PKSA-pwh8-d4fr-nywn`) without compromising the documentation generation process.
+- The extension's development dependencies include phpDocumentor and a
+  `league/flysystem` alias; consuming projects should use the phpDocumentor
+  PHAR as described in the README.
 
 ## 9. Integration and Installation
-The extension is designed to be integrated into PHP projects via **Composer**.
-
-### As a Composer Dependency
-Users can install the extension by adding it as a `dev` dependency in their project:
-```bash
-composer require --dev your-vendor/phpdoc-extension-tlp-ai
-```
-
-### Git Integration (for development/private use)
-If the project is not published on Packagist, it can be integrated using a Git repository in `composer.json`:
-```json
-{
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/your-vendor/phpdoc-extension-tlp-ai"
-        }
-    ],
-    "require-dev": {
-        "your-vendor/phpdoc-extension-tlp-ai": "dev-main"
-    }
-}
-```
-
-### phpDocumentor Configuration
-Once installed, the extension should be registered in the project's `phpdoc.dist.xml`:
-```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<phpdocumentor
-    configVersion="3"
-    xmlns="http://phpdoc.org/xsl/config"
->
-    <!-- ... -->
-    <extensions>
-        <extension class="\YourVendor\PhpDocAiTlp\Extension" />
-    </extensions>
-</phpdocumentor>
-```
+For installation, template setup, and PhpStorm highlighting, see
+[README.md](README.md).

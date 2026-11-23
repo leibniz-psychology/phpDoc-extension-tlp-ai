@@ -1,0 +1,74 @@
+{#
+Derived from phpDocumentor's default components/tags.html.twig.
+Copyright (c) 2010 Mike van Riel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+#}
+{% import 'components/macros/anchor.macro.twig' as anchor %}
+{% set tags = node.tags
+    |filter((v, k) => k not in ['var', 'param', 'property', 'property-read', 'property-write', 'method', 'return', 'package', 'api', 'deprecated'])
+    |filter(seriesOfTag => seriesOfTag|length > 0) %}
+
+{% if tags|length > 0 %}
+    <h5 class="phpdocumentor-tag-list__heading" id="{{ anchor.for_element(node, 'tags') }}">
+        Tags
+        {{ include('components/headerlink.html.twig', {'on': node, 'at': 'tags'}, with_context = false) }}
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+        {% for name, seriesOfTag in tags %}
+            <dt class="phpdocumentor-tag-list__entry">
+                <span class="phpdocumentor-tag__name">{{ name }}</span>
+            </dt>
+            {% for tag in seriesOfTag %}
+                <dd class="phpdocumentor-tag-list__definition">
+                    {% if name == 'ai-tlp' and tag.level is defined %}
+                        {% set colors = {
+                            'white': '#eeeeee',
+                            'green': '#187832',
+                            'amber': '#ffbf00',
+                            'orange': '#bd5100',
+                            'red': '#bf2534',
+                            'yolo': '#6f42c1'
+                        } %}
+                        <span class="phpdocumentor-tag-ai-tlp phpdocumentor-tag-ai-tlp--{{ tag.level }}"
+                              style="display:inline-block;padding:.2em .6em;border-radius:3px;font-weight:bold;background-color:{{ colors[tag.level] }};color:{{ tag.level in ['white', 'amber'] ? '#000' : '#fff' }}">
+                            {{ tag.fullLabel }}
+                        </span>
+                        {{ include('components/description.html.twig', {'node': tag}) }}
+                    {% else %}
+                        {% if tag.version %}
+                            <span class="phpdocumentor-tag-link">{{ tag.version }}</span>
+                        {% endif %}
+                        {% if tag.type %}
+                            <span class="phpdocumentor-tag-link">{{ tag.type|route('class:short')|join('|')|raw }}</span>
+                        {% endif %}
+                        {% if tag.reference %}
+                            <span class="phpdocumentor-tag-link">{{ tag.reference|route('class:short')|join('|')|raw }}</span>
+                        {% endif %}
+                        {% if tag.link %}
+                            <a class="phpdocumentor-tag-link" href="{{ tag.link }}">{% if not tag.description.empty %} {{ tag.description | description | markdown }} {% else %} {{ tag.link }} {% endif %}</a>
+                        {% else %}
+                            {{ include('components/description.html.twig', {'node': tag}) }}
+                        {% endif %}
+                    {% endif %}
+                </dd>
+            {% endfor %}
+        {% endfor %}
+    </dl>
+{% endif %}

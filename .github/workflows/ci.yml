@@ -26,8 +26,13 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
+    - name: Download phpDocumentor
+      run: curl --fail --location --retry 3 --output "$RUNNER_TEMP/phpDocumentor.phar" https://github.com/phpDocumentor/phpDocumentor/releases/download/v3.10.0/phpDocumentor.phar
+
     - name: Run tests
       run: vendor/bin/phpunit
+      env:
+        PHPDOC_PHAR: ${{ runner.temp }}/phpDocumentor.phar
 
     - name: Run PHPStan
       run: vendor/bin/phpstan analyze src --level 5

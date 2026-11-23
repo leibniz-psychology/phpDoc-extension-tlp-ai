@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace LeibnizPsychology\PhpDocAiTlp\Tests\Tag;
 
 use LeibnizPsychology\PhpDocAiTlp\Tag\AiTlpFactory;
+use InvalidArgumentException;
 use phpDocumentor\Reflection\DocBlock\Description;
 use PHPUnit\Framework\TestCase;
 
@@ -16,6 +17,23 @@ class AiTlpFactoryTest extends TestCase
         $this->assertEquals('ai-tlp', $tag->getName());
         $this->assertEquals('amber', $tag->getLevel());
         $this->assertNull($tag->getDescription());
+    }
+
+    public function testCreateNormalizesFullLabel(): void
+    {
+        $this->assertSame('amber', AiTlpFactory::create('AI:AMBER')->getLevel());
+    }
+
+    public function testCreateRejectsMissingOrInvalidLevels(): void
+    {
+        foreach (['', 'blue'] as $level) {
+            try {
+                AiTlpFactory::create($level);
+                $this->fail('Invalid levels must be rejected.');
+            } catch (InvalidArgumentException $exception) {
+                $this->assertStringContainsString('Invalid AI-TLP level:', $exception->getMessage());
+            }
+        }
     }
 
     public function testCreateWithLevelAndDescription(): void

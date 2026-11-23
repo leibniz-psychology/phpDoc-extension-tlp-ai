@@ -17,7 +17,4 @@
             </source>
         </api>
     </version>
-    <extensions>
-        <extension class="\LeibnizPsychology\PhpDocAiTlp\Extension" />
-    </extensions>
 </phpdocumentor>
